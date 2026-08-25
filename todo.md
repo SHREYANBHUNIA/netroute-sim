@@ -27,4 +27,4 @@
 - [x] Fix the D3 node-drag handler crash caused by an undefined bound node datum.
 - [x] Add regression coverage for safe topology node movement and verify the repaired interaction.
 - [x] Verify the repaired topology drag path at runtime and record the outcome.
-- [ ] Publish the verified NetRoute project source to the user’s GitHub repository and confirm the remote URL.
+- [x] Publish the verified NetRoute project source to the user’s GitHub repository and confirm the remote URL.
