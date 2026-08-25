@@ -23,4 +23,7 @@
 - [x] Verify real-database save and retrieval of a topology and experiment record through the persistence helpers.
 - [x] Add a SimulationDesk component test for event-log search and comparison-row rendering.
 - [x] Verify the rendered desktop and mobile experience, resolve defects, and create a delivery checkpoint.
-- [ ] Create the final delivery checkpoint for the verified NetRoute workspace.
+- [x] Create the final delivery checkpoint for the verified NetRoute workspace.
+- [x] Fix the D3 node-drag handler crash caused by an undefined bound node datum.
+- [x] Add regression coverage for safe topology node movement and verify the repaired interaction.
+- [x] Verify the repaired topology drag path at runtime and record the outcome.

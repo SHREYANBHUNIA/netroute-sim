@@ -1,6 +1,7 @@
+import { NETWORK_CANVAS_HEIGHT, NETWORK_CANVAS_WIDTH, resolveNodeDrag } from "@/lib/network-drag";
 import { connectionId, type NetworkLink, type NetworkNode } from "@/lib/network-sim";
 import { drag, select } from "d3";
-import { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 
 type CanvasProps = {
   nodes: NetworkNode[];
@@ -12,9 +13,6 @@ type CanvasProps = {
   onSelectLink: (id: string) => void;
   onMoveNode: (id: string, x: number, y: number) => void;
 };
-
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 610;
 
 function statusStroke(status: NetworkLink["status"]) {
   if (status === "failed") return "#eb654f";
@@ -42,11 +40,10 @@ export default function NetworkCanvas({
   useEffect(() => {
     if (!svgRef.current) return;
     const root = select(svgRef.current);
-    root.selectAll<SVGGElement, NetworkNode>(".draggable-node").call(
-      drag<SVGGElement, NetworkNode>().on("drag", (event, node) => {
-        const nextX = Math.max(7, Math.min(93, (event.x / CANVAS_WIDTH) * 100));
-        const nextY = Math.max(11, Math.min(89, (event.y / CANVAS_HEIGHT) * 100));
-        onMoveNode(node.id, nextX, nextY);
+    root.selectAll<SVGGElement, unknown>(".draggable-node").call(
+      drag<SVGGElement, unknown>().on("drag", function onDrag(event) {
+        const update = resolveNodeDrag(this.getAttribute("data-node-id"), event);
+        if (update) onMoveNode(update.id, update.x, update.y);
       }),
     );
   }, [nodes, onMoveNode]);
@@ -60,8 +57,8 @@ export default function NetworkCanvas({
     const end = nodeById.get(activeRoute[segment + 1]);
     if (!start || !end) return null;
     return {
-      x: ((start.x + (end.x - start.x) * localProgress) / 100) * CANVAS_WIDTH,
-      y: ((start.y + (end.y - start.y) * localProgress) / 100) * CANVAS_HEIGHT,
+      x: ((start.x + (end.x - start.x) * localProgress) / 100) * NETWORK_CANVAS_WIDTH,
+      y: ((start.y + (end.y - start.y) * localProgress) / 100) * NETWORK_CANVAS_HEIGHT,
     };
   }, [activeRoute, nodeById, packetProgress]);
 
@@ -71,7 +68,7 @@ export default function NetworkCanvas({
         <span className="status-dot h-1.5 w-1.5 rounded-full bg-cyan-300" />
         D3 topology canvas
       </div>
-      <svg ref={svgRef} viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`} className="h-full w-full select-none" role="img" aria-label="Interactive network topology canvas">
+      <svg ref={svgRef} viewBox={`0 0 ${NETWORK_CANVAS_WIDTH} ${NETWORK_CANVAS_HEIGHT}`} className="h-full w-full select-none" role="img" aria-label="Interactive network topology canvas">
         <defs>
           <pattern id="micro-grid" width="40" height="40" patternUnits="userSpaceOnUse">
             <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(109,222,216,.09)" strokeWidth="1" />
@@ -81,8 +78,8 @@ export default function NetworkCanvas({
             <stop offset="100%" stopColor="rgba(3,15,22,0)" />
           </radialGradient>
         </defs>
-        <rect width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="url(#micro-grid)" />
-        <rect width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="url(#canvas-glow)" />
+        <rect width={NETWORK_CANVAS_WIDTH} height={NETWORK_CANVAS_HEIGHT} fill="url(#micro-grid)" />
+        <rect width={NETWORK_CANVAS_WIDTH} height={NETWORK_CANVAS_HEIGHT} fill="url(#canvas-glow)" />
 
         <g>
           {links.map((link) => {
@@ -94,25 +91,25 @@ export default function NetworkCanvas({
             return (
               <g key={link.id} onClick={() => onSelectLink(link.id)} className="cursor-pointer">
                 <line
-                  x1={(source.x / 100) * CANVAS_WIDTH}
-                  y1={(source.y / 100) * CANVAS_HEIGHT}
-                  x2={(target.x / 100) * CANVAS_WIDTH}
-                  y2={(target.y / 100) * CANVAS_HEIGHT}
+                  x1={(source.x / 100) * NETWORK_CANVAS_WIDTH}
+                  y1={(source.y / 100) * NETWORK_CANVAS_HEIGHT}
+                  x2={(target.x / 100) * NETWORK_CANVAS_WIDTH}
+                  y2={(target.y / 100) * NETWORK_CANVAS_HEIGHT}
                   stroke="transparent"
                   strokeWidth="24"
                 />
                 <line
                   className="network-link"
-                  x1={(source.x / 100) * CANVAS_WIDTH}
-                  y1={(source.y / 100) * CANVAS_HEIGHT}
-                  x2={(target.x / 100) * CANVAS_WIDTH}
-                  y2={(target.y / 100) * CANVAS_HEIGHT}
+                  x1={(source.x / 100) * NETWORK_CANVAS_WIDTH}
+                  y1={(source.y / 100) * NETWORK_CANVAS_HEIGHT}
+                  x2={(target.x / 100) * NETWORK_CANVAS_WIDTH}
+                  y2={(target.y / 100) * NETWORK_CANVAS_HEIGHT}
                   stroke={active ? "#f5b046" : statusStroke(link.status)}
                   strokeWidth={active || selected ? 5 : 3}
                   strokeDasharray={link.status === "failed" ? "9 10" : link.status === "congested" ? "7 5" : "0"}
                   opacity={link.status === "failed" ? 0.64 : 0.84}
                 />
-                <g transform={`translate(${((source.x + target.x) / 200) * CANVAS_WIDTH} ${((source.y + target.y) / 200) * CANVAS_HEIGHT})`} pointerEvents="none">
+                <g transform={`translate(${((source.x + target.x) / 200) * NETWORK_CANVAS_WIDTH} ${((source.y + target.y) / 200) * NETWORK_CANVAS_HEIGHT})`} pointerEvents="none">
                   <rect x="-35" y="-16" width="70" height="28" rx="7" fill="rgba(4,20,26,.82)" stroke="rgba(114,228,221,.14)" />
                   <text textAnchor="middle" y="-2" fill="#cceeed" fontSize="11" fontFamily="DM Mono, monospace">{link.latency} ms</text>
                   <text textAnchor="middle" y="11" fill={statusStroke(link.status)} fontSize="9" fontFamily="DM Mono, monospace">{link.bandwidth} Mbps</text>
@@ -124,12 +121,12 @@ export default function NetworkCanvas({
 
         <g>
           {nodes.map((node) => {
-            const cx = (node.x / 100) * CANVAS_WIDTH;
-            const cy = (node.y / 100) * CANVAS_HEIGHT;
+            const cx = (node.x / 100) * NETWORK_CANVAS_WIDTH;
+            const cy = (node.y / 100) * NETWORK_CANVAS_HEIGHT;
             const selected = selectedId === node.id;
             const failed = node.status === "failed";
             return (
-              <g key={node.id} className="draggable-node cursor-grab active:cursor-grabbing" transform={`translate(${cx} ${cy})`} onClick={() => onSelectNode(node.id)}>
+              <g key={node.id} data-node-id={node.id} className="draggable-node cursor-grab active:cursor-grabbing" transform={`translate(${cx} ${cy})`} onClick={() => onSelectNode(node.id)}>
                 <circle className={failed ? "" : "node-halo"} r={selected ? 37 : 31} fill={selected ? "rgba(78,230,220,.16)" : "rgba(38,150,157,.09)"} stroke={selected ? "#68eee4" : "rgba(105,231,223,.22)"} strokeWidth="1.3" />
                 {node.kind === "router" ? (
                   <>
