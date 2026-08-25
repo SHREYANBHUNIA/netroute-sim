@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: netroute
+      POSTGRES_USER: netroute
+      POSTGRES_PASSWORD: change-me-in-a-secret-store
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netroute -d netroute"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  ns3-api:
+    build:
+      context: ./fastapi
+    environment:
+      DATABASE_URL: postgresql://netroute:change-me-in-a-secret-store@postgres:5432/netroute
+      NS3_RUNNER: /opt/netroute/ns3-core/run-simulation
+    volumes:
+      - ./ns3-core:/opt/netroute/ns3-core:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"

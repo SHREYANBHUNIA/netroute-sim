@@ -25,4 +25,26 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+export const savedTopologies = mysqlTable("saved_topologies", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 120 }).notNull(),
+  nodesJson: text("nodesJson").notNull(),
+  linksJson: text("linksJson").notNull(),
+  eventsJson: text("eventsJson").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const savedExperiments = mysqlTable("saved_experiments", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  topologyId: int("topologyId"),
+  name: varchar("name", { length: 120 }).notNull(),
+  algorithm: varchar("algorithm", { length: 48 }).notNull(),
+  resultsJson: text("resultsJson").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SavedTopology = typeof savedTopologies.$inferSelect;
+export type SavedExperiment = typeof savedExperiments.$inferSelect;

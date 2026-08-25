@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, savedExperiments, savedTopologies, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,52 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function listSavedTopologies(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(savedTopologies).where(eq(savedTopologies.userId, userId)).orderBy(desc(savedTopologies.updatedAt));
+}
+
+export async function listSavedExperiments(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(savedExperiments).where(eq(savedExperiments.userId, userId)).orderBy(desc(savedExperiments.createdAt));
+}
+
+export async function saveTopology(input: {
+  userId: number;
+  name: string;
+  nodes: unknown;
+  links: unknown;
+  events: unknown;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is unavailable");
+  const result = await db.insert(savedTopologies).values({
+    userId: input.userId,
+    name: input.name,
+    nodesJson: JSON.stringify(input.nodes),
+    linksJson: JSON.stringify(input.links),
+    eventsJson: JSON.stringify(input.events),
+  });
+  return { id: Number(result[0].insertId), success: true };
+}
+
+export async function saveExperiment(input: {
+  userId: number;
+  name: string;
+  algorithm: string;
+  results: unknown;
+  topologyId?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is unavailable");
+  const result = await db.insert(savedExperiments).values({
+    userId: input.userId,
+    topologyId: input.topologyId,
+    name: input.name,
+    algorithm: input.algorithm,
+    resultsJson: JSON.stringify(input.results),
+  });
+  return { id: Number(result[0].insertId), success: true };
+}

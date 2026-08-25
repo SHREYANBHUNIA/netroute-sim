@@ -1,0 +1,26 @@
+# Project TODO
+
+- [x] Define the delivered browser-simulation scope and document the C++/ns-3 + FastAPI deployment bridge.
+- [x] Create the cinematic dark teal-and-burnt-orange visual system with accessible contrast and responsive layout behavior.
+- [x] Build the D3-driven topology canvas with routers, hosts, configurable links, and link-state visualization.
+- [x] Implement topology editing for nodes and links, including bandwidth, latency, packet loss, and healthy/congested/failed states.
+- [x] Build a timeline editor for scheduled link, node, congestion, latency, packet-loss, and bandwidth events.
+- [x] Add node-aware target selection and validation for node-failure events in the timeline editor.
+- [x] Add configurable disruption magnitudes for congestion, latency, packet loss, and bandwidth reduction events.
+- [x] Apply configured congestion magnitude to route cost, packet delivery, and simulation metrics.
+- [x] Test scheduled dynamic-event magnitudes, including congestion, against expected simulation outcomes.
+- [x] Implement browser-executed Dijkstra, Bellman-Ford, Flooding, Distance Vector, Link State, and adaptive routing simulations.
+- [x] Add adaptive rerouting, packet animation, simulation play/pause/reset/speed controls, and route-change event logging.
+- [x] Record packet-level results including source, destination, route, latency, hops, delivery time, loss, and retransmissions.
+- [x] Present algorithm comparisons, experiment metrics, and a searchable event log.
+- [x] Add search and filter controls for route-change and disruption event logs.
+- [x] Add UI-state test coverage for event-log search and the comparison panel.
+- [x] Persist saved topology and experiment records through the full-stack application database.
+- [x] Add a Docker-oriented multi-service integration blueprint for C++/ns-3, FastAPI, React, and PostgreSQL.
+- [x] Write automated tests for routing utilities and saved experiment flows.
+- [x] Add saved experiment retrieval and a workspace history view for reopening prior results.
+- [x] Add an integration-style persistence test for saving and retrieving both topology and experiment records.
+- [x] Verify real-database save and retrieval of a topology and experiment record through the persistence helpers.
+- [x] Add a SimulationDesk component test for event-log search and comparison-row rendering.
+- [x] Verify the rendered desktop and mobile experience, resolve defects, and create a delivery checkpoint.
+- [ ] Create the final delivery checkpoint for the verified NetRoute workspace.
