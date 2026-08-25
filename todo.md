@@ -28,4 +28,4 @@
 - [x] Add regression coverage for safe topology node movement and verify the repaired interaction.
 - [x] Verify the repaired topology drag path at runtime and record the outcome.
 - [x] Publish the verified NetRoute project source to the user’s GitHub repository and confirm the remote URL.
-- [ ] Replace the visible Git commit author identity with CSE - 148 - SHREYAN BHUNIA and shreyan.bhunia.k@gmail.com, then verify GitHub history.
+- [x] Replace the visible Git commit author identity with CSE - 148 - SHREYAN BHUNIA and shreyan.bhunia.k@gmail.com, then verify GitHub history.
